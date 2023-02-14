@@ -8,6 +8,8 @@ class TgBot:
     admin_ids: list[int]
     e_mail: str
     e_pass: str
+    adress_to: str
+    abonent: str
 
 
 @dataclass
@@ -22,4 +24,6 @@ def load_config(path: str | None) -> Config:
     return Config(tg_bot=TgBot(token=env('BOT_TOKEN'),
                                admin_ids=list(map(int, env.list('ADMIN_IDS'))),
                                e_mail=env('E_MAIL'),
-                               e_pass=env('E_PASS')))
+                               e_pass=env('E_PASS'),
+                               adress_to=env('adress_to'),
+                               abonent=env('abonent')))
