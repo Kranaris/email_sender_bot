@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 def get_enter_data() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton("/ввести_показания")],
+        [KeyboardButton("/enter_data")],
     ], resize_keyboard=True, one_time_keyboard=True)
 
 
@@ -11,5 +11,10 @@ def get_enter_data() -> ReplyKeyboardMarkup:
 
 def get_send_data() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton("/отправить_показания")],
+        [KeyboardButton("/send_message")],
     ], resize_keyboard=True, one_time_keyboard=True)
+
+    return kb
+
+def get_cancel() -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('/cancel'))
