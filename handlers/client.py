@@ -9,7 +9,9 @@ from keyboards.client_kb import *
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-months = ['январь', 'февраль', 'март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь']
+months = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь',
+          'декабрь']
+
 
 class Data_statesGroup(StatesGroup):
     month = State()
@@ -49,6 +51,11 @@ async def enter_data_command(message: types.Message) -> None:
         await message.delete()
 
 
+async def check_month(message: types.Message) -> None:
+    if message.from_user.id in ADMINS:
+        await message.reply("Это не месяц!")
+
+
 async def enter_month(message: types.Message, state: FSMContext) -> None:
     if message.from_user.id in ADMINS:
         async with state.proxy() as data:
@@ -56,10 +63,6 @@ async def enter_month(message: types.Message, state: FSMContext) -> None:
         await message.answer("Горячая вода:")
         await Data_statesGroup.next()
 
-async def cheack_month(message: types.Message) -> None:
-    if message.from_user.id in ADMINS:
-        if not message.text.isalpha() or message.text.lower() not in months:
-            await message.reply("Это не месяц!")
 
 async def cold_water(message: types.Message, state: FSMContext) -> None:
     if message.from_user.id in ADMINS:
@@ -97,15 +100,14 @@ async def electricity_night(message: types.Message, state: FSMContext) -> None:
                            f"Электричество день: {data['electricity_day']}\n" \
                            f"Электричество ночь: {data['electricity_night']}"
     await message.answer(f"{data['body']}\n"
-                        f"Для отправки нажми /send_message",
-                        reply_markup=get_send_data())
+                         f"Для отправки нажми /send_message",
+                         reply_markup=get_send_data())
     await Data_statesGroup.next()
 
 
 async def send_e_mail_message(message: types.Message, state: FSMContext) -> None:
     if message.from_user.id in ADMINS:
         async with state.proxy() as data:
-            print(data['month'])
             mgs = MIMEMultipart()
             mgs['From'] = e_mail
             mgs['To'] = adress_to
@@ -127,8 +129,9 @@ def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(start_command_client, commands=['start'])
     dp.register_message_handler(cancel_command, commands=['cancel'], state="*")
     dp.register_message_handler(enter_data_command, commands=['enter_data'])
+    dp.register_message_handler(check_month, lambda message: not message.text.isalpha() or message.text.lower() not in months,
+                                state=Data_statesGroup.month)
     dp.register_message_handler(enter_month, state=Data_statesGroup.month)
-    dp.register_message_handler(cheack_month, state=Data_statesGroup.month)
     dp.register_message_handler(cold_water, state=Data_statesGroup.cold_water)
     dp.register_message_handler(hot_water, state=Data_statesGroup.hot_water)
     dp.register_message_handler(electricity_day, state=Data_statesGroup.e_day)
